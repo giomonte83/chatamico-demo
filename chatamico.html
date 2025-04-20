@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatAmico Demo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom right, #ffeaa7, #fab1a0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .bot {
+      font-size: 100px;
+    }
+    .button {
+      font-size: 24px;
+      padding: 20px;
+      background-color: #ff7675;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .text {
+      font-size: 20px;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bot">🤖</div>
+  <h1>ChatAmico</h1>
+  <p class="text" id="status">Premi il tasto e parla con me!</p>
+  <button class="button" onclick="startListening()">🎤 Parla</button>
+
+  <script>
+    const status = document.getElementById('status');
+
+    const synth = window.speechSynthesis;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'it-IT';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    function speak(text) {
+      const utterThis = new SpeechSynthesisUtterance(text);
+      utterThis.lang = 'it-IT';
+      synth.speak(utterThis);
+    }
+
+    function startListening() {
+      status.textContent = 'Sto ascoltando...';
+      recognition.start();
+    }
+
+    recognition.onresult = function(event) {
+      const userSpeech = event.results[0][0].transcript;
+      status.textContent = 'Hai detto: ' + userSpeech;
+
+      let responseText = '';
+      if (userSpeech.toLowerCase().includes('favola')) {
+        responseText = 'Certo! C’era una volta un drago che aveva paura del buio...';
+      } else if (userSpeech.toLowerCase().includes('come stai')) {
+        responseText = 'Benissimo, grazie! E tu? Vuoi giocare con me?';
+      } else {
+        responseText = 'Wow! Che cosa interessante! Vuoi che ti racconti una storia o facciamo un gioco?';
+      }
+
+      speak(responseText);
+    };
+
+    recognition.onerror = function(event) {
+      status.textContent = 'Errore: ' + event.error;
+    };
+  </script>
+</body>
+</html>
